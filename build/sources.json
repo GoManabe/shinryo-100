@@ -187,5 +187,32 @@
     "url": "https://www.mhlw.go.jp/content/12400000/001712853.pdf",
     "issued": "2026-06-17",
     "kind": "疑義解釈"
+  },
+  {
+    "src": "S22",
+    "title": "令和8年度診療報酬改定の概要 1．賃上げ・物価対応（賃上げ）",
+    "short": "改定の概要 1.賃上げ",
+    "issuer": "厚生労働省保険局医療課",
+    "url": "https://www.mhlw.go.jp/content/12400000/001745824.pdf",
+    "issued": "",
+    "kind": "概要資料"
+  },
+  {
+    "src": "S23",
+    "title": "令和8年度診療報酬改定の概要 2．賃上げ・物価対応（物価対応）",
+    "short": "改定の概要 2.物価対応",
+    "issuer": "厚生労働省保険局医療課",
+    "url": "https://www.mhlw.go.jp/content/12400000/001672521.pdf",
+    "issued": "",
+    "kind": "概要資料"
+  },
+  {
+    "src": "S24",
+    "title": "疑義解釈資料の送付について（その10）（令和8年7月17日 事務連絡）",
+    "short": "疑義解釈（その10）",
+    "issuer": "厚生労働省保険局医療課",
+    "url": "https://www.mhlw.go.jp/content/12400000/001725624.pdf",
+    "issued": "2026-07-17",
+    "kind": "疑義解釈"
   }
 ]
