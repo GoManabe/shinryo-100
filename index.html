@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0075C2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="診療報酬100">
+<title>診療報酬100</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{
+  --bg:#f4f6f9;--card:#ffffff;--ink:#1f2328;--sub:#5b6470;--line:#dde2e8;
+  --main:#0075C2;--main-ink:#ffffff;--accent:#009FB9;--soft:#e8f2fa;
+  --ok:#00A73C;--mid:#C98A00;--ng:#E0524D;--chip:#eef1f5;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171b;--card:#1d2126;--ink:#e8eaed;--sub:#a3abb5;--line:#323840;
+    --main:#4aa3e0;--main-ink:#0b1520;--accent:#3cc3d8;--soft:#1f2e3b;
+    --ok:#3cc56b;--mid:#e0a92e;--ng:#f07a75;--chip:#2a3038;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171b;--card:#1d2126;--ink:#e8eaed;--sub:#a3abb5;--line:#323840;
+  --main:#4aa3e0;--main-ink:#0b1520;--accent:#3cc3d8;--soft:#1f2e3b;
+  --ok:#3cc56b;--mid:#e0a92e;--ng:#f07a75;--chip:#2a3038;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Hiragino Sans","Yu Gothic UI","游ゴシック","Yu Gothic",Meiryo,Arial,sans-serif;line-height:1.65;font-size:16px;
+  -webkit-text-size-adjust:100%;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:680px;margin:0 auto;padding:12px 16px 40px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 10px}
+header.top h1{font-size:19px;margin:0;color:var(--main);letter-spacing:.02em}
+header.top .ver{font-size:12px;color:var(--sub);text-align:right}
+button{font:inherit;cursor:pointer;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px}
+button:disabled{opacity:.45;cursor:default}
+.btn-main{background:var(--main);color:var(--main-ink);border-color:var(--main);font-weight:700}
+.btn-big{width:100%;font-size:18px;padding:16px}
+.btn-link{border:none;background:none;color:var(--main);padding:6px 4px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+.box h2{font-size:16px;margin:0 0 10px}
+.muted{color:var(--sub);font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--soft);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:22px;color:var(--main)}
+.stat span{font-size:12px;color:var(--sub)}
+.chip{display:inline-block;font-size:12px;background:var(--chip);color:var(--sub);border-radius:999px;padding:2px 10px;margin:0 4px 4px 0}
+.chip.new{background:var(--accent);color:#fff}
+.bar{height:8px;background:var(--chip);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--main)}
+.bar i.ok{background:var(--ok)}
+.fieldrow{display:grid;grid-template-columns:1fr 3.5em;gap:2px 8px;align-items:center;font-size:13px;margin:8px 0}
+.fieldrow .bar{grid-column:1 / 3;grid-row:2}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.nav button{padding:14px 8px}
+/* 学習カード */
+.progress{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--sub)}
+.progress .bar{flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 18px;margin:12px 0;min-height:42vh;display:flex;flex-direction:column}
+.card .ask{font-size:13px;color:var(--sub);margin-bottom:6px}
+.card .front{font-size:23px;font-weight:700;line-height:1.5;margin:8px 0 4px}
+.card .front.long{font-size:19px;font-weight:600}
+.answer{border-top:2px solid var(--main);margin-top:14px;padding-top:12px}
+.answer .main{font-size:19px;font-weight:700;color:var(--main);line-height:1.55}
+.detail dt{font-size:12px;color:var(--sub);margin-top:12px;font-weight:700}
+.detail dd{margin:2px 0 0}
+.detail ul{margin:2px 0 0;padding-left:1.2em}
+.detail li{margin:2px 0}
+.pt{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding:3px 0}
+.pt b{white-space:nowrap}
+.src{font-size:12px;color:var(--sub)}
+.src a{color:var(--main)}
+.grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:sticky;bottom:0;margin-top:8px;padding:8px 0;background:var(--bg)}
+.grades button{background:var(--card)}
+.grades button{padding:14px 4px;font-weight:700;font-size:15px}
+.g1{border-color:var(--ng);color:var(--ng)}
+.g2{border-color:var(--mid);color:var(--mid)}
+.g3{border-color:var(--ok);color:var(--ok)}
+.reveal{position:sticky;bottom:8px;margin-top:8px}
+.kbd{font-size:11px;color:var(--sub);font-weight:400;display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--sub);font-weight:600}
+td.n{text-align:right}
+input[type=search],select,input[type=number]{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+label.opt{display:flex;align-items:center;gap:8px;padding:8px 0}
+.item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.item:last-child{border-bottom:none}
+.badge{font-size:11px;border-radius:999px;padding:2px 8px;white-space:nowrap;background:var(--chip);color:var(--sub)}
+.badge.l{background:var(--soft);color:var(--main)}
+.badge.m{background:var(--ok);color:#fff}
+.notice{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:13px;margin:8px 0}
+footer{font-size:11px;color:var(--sub);margin-top:24px;line-height:1.6}
+footer a{color:var(--sub)}
+.pair{display:grid;grid-template-columns:1fr;gap:8px}
+.pair .side{background:var(--soft);border-radius:12px;padding:12px}
+.pair .side b{color:var(--main)}
+@media (min-width:600px){.pair{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 data-act="home" style="cursor:pointer">診療報酬100</h1>
+    <div class="ver" id="ver"></div>
+  </header>
+  <main id="app"></main>
+  <footer id="foot"></footer>
+</div>
+<script>
+"use strict";
+const DATA = {"meta":{"title":"診療報酬100","fy":"R8","fyLabel":"令和8年度","dataVersion":"2026-11-10","basis":"令和8年度診療報酬改定（2026年6月1日適用）","fields":{"NY":{"label":"入院基本料・特定入院料","target":25},"KS":{"label":"入院基本料等加算","target":30},"RH":{"label":"リハビリテーション","target":15},"ZT":{"label":"在宅医療・医学管理","target":15},"GK":{"label":"外来・救急・その他","target":15}},"totalItems":100,"activeItems":13},"sources":{"S01":{"src":"S01","title":"診療報酬の算定方法の一部を改正する件（令和8年厚生労働省告示第69号）別表第一 医科診療報酬点数表","short":"告示第69号 医科点数表","issuer":"厚生労働省","url":"https://www.mhlw.go.jp/content/12400000/001686842.pdf","issued":"","kind":"告示"},"S02":{"src":"S02","title":"基本診療料の施設基準等の一部を改正する件（令和8年厚生労働省告示第70号）","short":"告示第70号 基本診療料の施設基準等","issuer":"厚生労働省","url":"https://www.mhlw.go.jp/content/12400000/001675854.pdf","issued":"2026-03-05","kind":"告示"},"S03":{"src":"S03","title":"基本診療料の施設基準等及びその届出に関する手続きの取扱いについて（保医発0305第7号、2026年10月7日訂正後）","short":"保医発0305第7号 施設基準通知","issuer":"厚生労働省保険局医療課","url":"https://www.mhlw.go.jp/content/12400000/001757361.pdf","issued":"2026-03-05","kind":"通知"},"S04":{"src":"S04","title":"令和8年度診療報酬改定の概要 3．急性期・高度急性期入院医療","short":"改定の概要 3.急性期・高度急性期入院医療","issuer":"厚生労働省保険局医療課","url":"https://www.mhlw.go.jp/content/12400000/001671032.pdf","issued":"","kind":"概要資料"},"S05":{"src":"S05","title":"令和8年度診療報酬改定の概要 4．包括期・慢性期入院医療","short":"改定の概要 4.包括期・慢性期入院医療","issuer":"厚生労働省保険局医療課","url":"https://www.mhlw.go.jp/content/12400000/001673287.pdf","issued":"","kind":"概要資料"}},"items":[{"id":"NY-001","name":"急性期病院A一般入院料","aliases":["急性期病院A"],"kubun":"A100","field":"NY","group":"入院基本料","priority":"A","order":1,"summary":"救急搬送と全身麻酔手術の実績が多い、地域の拠点となる急性期病院の一般病棟を評価する入院料","target":"救急搬送 年2,000件以上かつ全身麻酔手術 年1,200件以上の実績を持つ、DPC対象病院の一般病棟","requirements":["看護職員7対1（7割以上が看護師）、平均在院日数16日以内","病院の実績：救急搬送 年2,000件以上（夜間の受入れ1割以上）かつ全身麻酔手術 年1,200件以上","DPC対象病院であり、地域包括医療病棟・地域包括ケア病棟の届出がないこと"],"points":[{"label":"急性期病院A一般入院料","value":1930,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-002","diff":"Aは7対1で、救急搬送2,000件と全身麻酔手術1,200件の両方が必要。Bは10対1で、実績の要件が選択式で緩い"},{"id":"NY-003","diff":"急性期一般入院料1は病棟の重症患者の割合で評価し、病院全体の救急・手術の実績は問わない"}],"hook":"「A＝地域の拠点病院」。7対1＋救急2,000件＋全身麻酔1,200件の3点セットで覚える","revNote":"令和8年度に新設。病棟の患者割合で評価する急性期一般入院料とは別に、病院全体の救急・手術の実績で評価する区分ができた","r8new":true,"sources":[{"src":"S01","loc":"A100 1イ","checked":"2026-11-10"},{"src":"S02","loc":"第五の二(1)イ","checked":"2026-11-10"},{"src":"S03","loc":"別添2 第2 4の9(1)","checked":"2026-11-10"},{"src":"S04","loc":"p.2〜4","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-002","name":"急性期病院B一般入院料","aliases":["急性期病院B"],"kubun":"A100","field":"NY","group":"入院基本料","priority":"A","order":2,"summary":"地域で救急医療を担う急性期病院の一般病棟を、救急搬送などの実績で評価する入院料（10対1）","target":"第二次救急医療機関などで、救急搬送 年1,500件以上などの実績を持つDPC対象病院の一般病棟","requirements":["看護職員10対1（7割以上が看護師）、平均在院日数21日以内","実績はいずれか：救急搬送 年1,500件以上／救急搬送500件以上かつ全身麻酔手術500件以上／人口20万人未満の医療圏で救急搬送が最多（年1,000件以上）／離島の医療圏で救急搬送が最多","DPC対象病院であり、地域包括医療病棟の届出がないこと（地域包括ケア病棟は持てる）"],"points":[{"label":"急性期病院B一般入院料","value":1643,"unit":"点","per":"1日につき","note":"看護・多職種協働加算2（255点）を上乗せできる"}],"similar":[{"id":"NY-001","diff":"Bは10対1で、実績の要件が選択式。地域包括ケア病棟を併設できる点もAと違う"},{"id":"NY-004","diff":"急性期一般入院料2〜6は病院の救急の実績を問わず、病棟の重症患者の割合で区分が決まる"}],"hook":"「B＝地域の救急の担い手」。人口20万人未満の地域や離島への配慮がある","revNote":"令和8年度に新設。救急搬送の実績が多い病院を、10対1の看護配置でも評価する区分","r8new":true,"sources":[{"src":"S01","loc":"A100 1ロ","checked":"2026-11-10"},{"src":"S02","loc":"第五の二(1)イ","checked":"2026-11-10"},{"src":"S03","loc":"別添2 第2 4の9(2)","checked":"2026-11-10"},{"src":"S04","loc":"p.2〜6","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-003","name":"急性期一般入院料1","aliases":["急性期一般1","7対1"],"kubun":"A100","field":"NY","group":"入院基本料","priority":"A","order":3,"summary":"看護7対1で重症患者を多く受け入れる一般病棟の入院料。急性期一般入院基本料の最上位の区分","target":"重症度、医療・看護必要度の基準を満たす患者が多い一般病棟","requirements":["看護職員7対1（7割以上が看護師）、平均在院日数16日以内","重症度、医療・看護必要度Ⅱの割合指数：特に高い基準27%以上かつ一定程度高い基準34%以上（200床未満で必要度Ⅰを使う場合は28%・35%）","自宅等への退院8割以上、常勤の医師が入院患者数の10%以上"],"points":[{"label":"急性期一般入院料1","value":1874,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-001","diff":"急性期病院Aは病院全体の救急・手術の実績が必要。急性期一般1は病棟の重症患者の割合で決まり、点数はAより56点低い"},{"id":"NY-004","diff":"入院料2〜6は10対1・平均在院日数21日以内で、重症患者の割合の基準が段階的に低い"}],"hook":"会議で「7対1」と言われたら、急性期一般1か急性期病院Aのこと","revNote":"令和8年度から、該当患者の割合に救急搬送の受入件数に応じた係数を足した「割合指数」で判定する","r8new":false,"sources":[{"src":"S01","loc":"A100 2イ","checked":"2026-11-10"},{"src":"S02","loc":"第五の二(1)ロ①②","checked":"2026-11-10"},{"src":"S04","loc":"p.4, p.7","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-004","name":"急性期一般入院料2〜6","aliases":["急性期一般2","急性期一般4","10対1"],"kubun":"A100","field":"NY","group":"入院基本料","priority":"A","order":4,"summary":"看護10対1の急性期一般病棟の入院料。重症患者の割合に応じて5段階に分かれる","target":"急性期の患者を受け入れる、看護10対1の一般病棟","requirements":["看護職員10対1（7割以上が看護師）、平均在院日数21日以内","必要度Ⅰの割合指数：入院料2は28%、3は24%、4は20%、5は15%以上。6は測定のみ（必要度Ⅱは各1ポイント低い）","入院料2・3を届け出るには、直前に3か月以上、入院料1（3は1か2）を算定していたことが必要"],"points":[{"label":"急性期一般入院料2","value":1779,"unit":"点","per":"1日につき"},{"label":"急性期一般入院料3","value":1704,"unit":"点","per":"1日につき"},{"label":"急性期一般入院料4","value":1597,"unit":"点","per":"1日につき","note":"看護・多職種協働加算1（277点）を上乗せできる"},{"label":"急性期一般入院料5","value":1575,"unit":"点","per":"1日につき"},{"label":"急性期一般入院料6","value":1523,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-003","diff":"入院料1だけが7対1・平均在院日数16日以内"},{"id":"NY-002","diff":"急性期病院Bも10対1だが、病院の救急の実績で決まる。入院料2〜6は病棟の重症患者の割合で決まる"}],"hook":"1は7対1、2〜6は10対1。数字が大きいほど重症患者の基準が緩く、点数が低い","revNote":"令和8年度から、入院料4に看護・多職種協働加算1（277点）を上乗せできるようになった","r8new":false,"sources":[{"src":"S01","loc":"A100 2ロ〜ヘ","checked":"2026-11-10"},{"src":"S02","loc":"第五の二(1)ロ③〜⑦","checked":"2026-11-10"},{"src":"S04","loc":"p.4〜5","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-005","name":"地域一般入院料1〜3","aliases":["地域一般","13対1","15対1"],"kubun":"A100","field":"NY","group":"入院基本料","priority":"A","order":5,"summary":"急性期一般より看護配置が薄い（13対1・15対1）一般病棟の入院料","target":"中小病院の一般病棟で、急性期一般の基準（10対1以上）を満たさない病棟","requirements":["入院料1・2：看護職員13対1（7割以上が看護師）、平均在院日数24日以内","入院料3：看護職員15対1（4割以上が看護師）、平均在院日数60日以内","入院料1は、重症度、医療・看護必要度を継続して測定・評価していること"],"points":[{"label":"地域一般入院料1","value":1290,"unit":"点","per":"1日につき"},{"label":"地域一般入院料2","value":1282,"unit":"点","per":"1日につき"},{"label":"地域一般入院料3","value":1097,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-004","diff":"急性期一般は10対1以上・平均在院日数21日以内。地域一般は13対1・15対1"},{"id":"NY-011","diff":"地域包括医療病棟は10対1で、救急の受入れとリハ・栄養の体制を求め、点数は大幅に高い"}],"hook":"「地域一般」と言われたら13対1か15対1","revNote":"","r8new":false,"sources":[{"src":"S01","loc":"A100 3","checked":"2026-11-10"},{"src":"S02","loc":"第五の二(1)ハ","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-006","name":"療養病棟入院基本料","aliases":["療養病棟","療養1","療養2"],"kubun":"A101","field":"NY","group":"入院基本料","priority":"A","order":6,"summary":"慢性期の患者を受け入れる療養病棟の入院料。医療区分とADL区分の組合せ（30区分）で点数が決まる","target":"医療の必要性が高い慢性期の患者（医療区分2・3の患者が中心）","requirements":["看護職員20対1（2割以上が看護師）、看護補助者20対1","医療区分2・3の患者の割合：療養病棟入院料1は8割以上、入院料2は6割以上","患者ごとに医療区分（1〜3）とADL区分（1〜3）を判定し、記録すること"],"points":[{"label":"療養病棟入院料1（30区分）","min":901,"max":2035,"unit":"点","per":"1日につき"},{"label":"療養病棟入院料2（30区分）","min":834,"max":1967,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-007","diff":"障害者施設等入院基本料は重度障害者・難病患者などが7割以上の病棟で、原則は出来高で算定する"},{"id":"NY-013","diff":"地域包括ケア病棟は在宅復帰をめざす病棟で、入院できるのは60日まで"}],"hook":"療養＝医療区分×ADL区分。入院料1は医療区分2・3が8割、入院料2は6割","revNote":"令和8年度に、療養病棟入院料2の医療区分2・3の割合の基準が5割から6割に引き上げられた（経過措置は2026年9月30日まで）","r8new":false,"sources":[{"src":"S01","loc":"A101","checked":"2026-11-10"},{"src":"S02","loc":"第五の三(1)(2)","checked":"2026-11-10"},{"src":"S05","loc":"p.24","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-007","name":"障害者施設等入院基本料","aliases":["障害者病棟"],"kubun":"A106","field":"NY","group":"入院基本料","priority":"B","order":7,"summary":"重度の障害者や難病患者などを主に受け入れる病棟の入院料。原則として出来高で算定する","target":"重度の肢体不自由児（者）、脊髄損傷等の重度障害者、重度の意識障害者、筋ジストロフィー患者、難病患者など（脳卒中の後遺症・認知症の患者を除く）","requirements":["上記の患者を7割以上入院させる一般病棟であること（医療型障害児入所施設などの一般病棟も対象）","看護配置（7対1〜15対1）で4区分。7対1は超重症児（者）・準超重症児（者）が3割以上","脳卒中の後遺症や廃用症候群で医療区分1・2の患者などは、療養病棟に準じた包括の点数になる"],"points":[{"label":"7対1入院基本料","value":1749,"unit":"点","per":"1日につき"},{"label":"10対1入院基本料","value":1475,"unit":"点","per":"1日につき"},{"label":"13対1入院基本料","value":1242,"unit":"点","per":"1日につき"},{"label":"15対1入院基本料","value":1083,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-006","diff":"療養病棟は医療区分で評価する包括払い。障害者施設等は原則が出来高"}],"hook":"障害者病棟は原則出来高。ただし脳卒中の後遺症などは療養病棟並みの包括","revNote":"令和8年度に、主傷病名が廃用症候群で医療区分1・2に相当する患者も、療養病棟に準じた評価になった","r8new":false,"sources":[{"src":"S01","loc":"A106","checked":"2026-11-10"},{"src":"S02","loc":"第五の七(1)(2)","checked":"2026-11-10"},{"src":"S05","loc":"p.26〜27","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-008","name":"特定機能病院入院基本料","aliases":["特定機能病院A","特定機能病院B","特定機能病院C"],"kubun":"A104","field":"NY","group":"入院基本料","priority":"B","order":8,"summary":"高度な医療を担う特定機能病院の入院基本料。令和8年度にA・B・Cの3区分に分かれた","target":"医療法上の特定機能病院の一般病棟・結核病棟・精神病棟","requirements":["A：幅広い診療科を設置し、地域の医療の確保に必要な役割を担う特定機能病院","B：国が定める中長期目標を設定し、地域の医療の確保に必要な役割を担う特定機能病院","C：A・B以外の特定機能病院"],"points":[{"label":"特定機能病院A 一般病棟 7対1","value":2146,"unit":"点","per":"1日につき"},{"label":"特定機能病院B 一般病棟 7対1","value":2136,"unit":"点","per":"1日につき"},{"label":"特定機能病院C 一般病棟 7対1","value":2016,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-001","diff":"急性期病院Aは救急・手術の実績で評価する一般の病院向け。特定機能病院入院基本料は、医療法の承認を受けた特定機能病院だけが算定する"}],"hook":"特定機能病院＝大学病院の本院が中心。令和8年度からA・B・Cの3区分","revNote":"令和8年度に、一律の区分からA・B・Cの3区分に見直された（改定前の一般病棟7対1は1,822点）","r8new":false,"sources":[{"src":"S01","loc":"A104","checked":"2026-11-10"},{"src":"S04","loc":"p.17","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-009","name":"精神病棟入院基本料","aliases":["精神病棟"],"kubun":"A103","field":"NY","group":"入院基本料","priority":"B","order":9,"summary":"精神病床の病棟で算定する基本の入院料。看護配置（10対1〜20対1）で点数が分かれる","target":"精神病床の病棟に入院する患者（特定機能病院を除く）","requirements":["看護配置に応じて10対1・13対1・15対1・18対1・20対1の区分がある","18対1・20対1は、入院1年未満か1年以上かで点数が分かれる","急性期病院A・Bの基準を満たす病院の精神病棟は、急性期病院精神病棟入院料を算定する"],"points":[{"label":"精神病棟入院料 10対1","value":1471,"unit":"点","per":"1日につき"},{"label":"精神病棟入院料 15対1","value":918,"unit":"点","per":"1日につき"},{"label":"急性期病院A精神病棟入院料 10対1","value":1519,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-002","diff":"急性期病院Bの基準を満たす病院は、精神病棟でも急性期病院B精神病棟入院料（10対1で1,502点）を算定する"}],"hook":"精神病棟は看護配置で5区分。18対1・20対1は入院期間でさらに分かれる","revNote":"令和8年度に、急性期病院A・Bの病院の精神病棟向けに「急性期病院精神病棟入院基本料」が新設された","r8new":false,"sources":[{"src":"S01","loc":"A103","checked":"2026-11-10"},{"src":"S04","loc":"p.3","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-010","name":"特別入院基本料・月平均夜勤時間超過減算","aliases":["特別入院基本料","夜勤72時間","夜勤減算"],"kubun":"A100注2ほか","field":"NY","group":"入院基本料","priority":"B","order":10,"summary":"入院基本料の施設基準を満たせなくなった病棟に適用される、大幅に低い入院料と減算の仕組み","target":"看護配置などの施設基準を満たさなくなった病棟","requirements":["一般病棟の施設基準を満たさない場合は、特別入院基本料（704点）を算定する","看護職員の月平均夜勤時間72時間以下の基準だけを満たせなくなった場合は、直近3か月に限り所定点数から15%を減算する（月平均夜勤時間超過減算）"],"points":[{"label":"特別入院基本料（一般病棟）","value":704,"unit":"点","per":"1日につき"},{"label":"月平均夜勤時間超過減算","text":"所定点数の15%を減算（直近3か月に限る）"}],"similar":[{"id":"NY-004","diff":"急性期一般入院料6（1,523点）でも、特別入院基本料（704点）の2倍以上ある"}],"hook":"夜勤72時間を超えると15%減。様式9で毎月の夜勤時間を確かめることが収益を守る","revNote":"","r8new":false,"sources":[{"src":"S01","loc":"A100 注2","checked":"2026-11-10"},{"src":"S02","loc":"第五の二(2)","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-011","name":"地域包括医療病棟入院料","aliases":["地域包括医療病棟","包括医療病棟"],"kubun":"A304","field":"NY","group":"特定入院料","priority":"A","order":11,"summary":"高齢者の救急患者を受け入れ、治療とリハビリ・栄養管理を一体で行う病棟の入院料（包括）","target":"誤嚥性肺炎や尿路感染症など、高齢者の中等症までの救急疾患の患者","requirements":["看護職員10対1（7割以上が看護師）、病棟に常勤のPT・OT・STが2名以上、専任の常勤管理栄養士が1名以上","救急搬送等で入院した患者15%以上、在宅等への退院8割以上、平均在院日数20日以内（85歳以上の割合に応じて延長）","院内に一般病棟入院基本料の病棟がなければ入院料1、あれば入院料2。急性期病院A・Bの病院は届け出られない"],"points":[{"label":"入院料1（一般病棟なし）・緊急入院で手術なし","value":3367,"unit":"点","per":"1日につき"},{"label":"入院料1（一般病棟なし）・予定入院で手術あり","value":3117,"unit":"点","per":"1日につき"},{"label":"入院料2（一般病棟あり）・緊急入院で手術なし","value":3316,"unit":"点","per":"1日につき","note":"90日を超えると地域一般入院料3の例で算定"}],"similar":[{"id":"NY-013","diff":"地域包括ケアは13対1で入院は60日まで、急性期後の受入れと在宅支援が中心。地域包括医療は10対1で、高齢者救急の受入れと治療が中心"},{"id":"NY-005","diff":"地域一般入院料は看護配置で決まる一般病棟の入院料。地域包括医療病棟は救急の受入れ・リハ・栄養の体制を求める包括の入院料"}],"hook":"「地域包括医療」は高齢者救急、「地域包括ケア」は急性期後と在宅の支援","revNote":"令和8年度に、院内の一般病棟の有無（入院料1・2）と、入院形態・手術の有無（各入院料1〜3）で点数が分かれた（改定前は一律3,050点）","r8new":false,"sources":[{"src":"S01","loc":"A304","checked":"2026-11-10"},{"src":"S02","loc":"第九の六の四(1)(2)","checked":"2026-11-10"},{"src":"S05","loc":"p.3〜4","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-012","name":"回復期リハビリテーション病棟入院料","aliases":["回リハ","回復期リハ病棟"],"kubun":"A308","field":"NY","group":"特定入院料","priority":"A","order":12,"summary":"脳卒中や骨折などの後に、集中的なリハビリで在宅復帰をめざす病棟の入院料","target":"回復期リハビリテーションを要する状態の患者（状態ごとに入院できる日数の上限がある）","requirements":["入院料1・2：看護職員13対1（7割以上が看護師）、専従のPT3名・OT2名・ST1名","入院料3・4：看護職員15対1（4割以上が看護師）、専従のPT2名・OT1名","リハビリテーション実績指数：入院料1は42以上、3は37以上、2・4は32以上"],"points":[{"label":"回復期リハビリテーション病棟入院料1","value":2346,"unit":"点","per":"1日につき"},{"label":"回復期リハビリテーション病棟入院料3","value":2062,"unit":"点","per":"1日につき"},{"label":"回復期リハビリテーション病棟入院料5","value":1794,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-013","diff":"地域包括ケアはリハ専門の病棟ではなく、急性期後の受入れと在宅支援が中心で、入院は60日まで"}],"hook":"回リハは「どれだけADLを改善させたか（実績指数）」で区分が決まる","revNote":"令和8年度に点数が引き上げられ（入院料1は2,229→2,346点）、入院料2・4にも実績指数の要件が入った。入院料1の病棟向けに回復期リハビリテーション強化体制加算（80点）が新設された","r8new":false,"sources":[{"src":"S01","loc":"A308","checked":"2026-11-10"},{"src":"S05","loc":"p.12〜14","checked":"2026-11-10"}],"updated":"2026-11-10"},{"id":"NY-013","name":"地域包括ケア病棟入院料","aliases":["地ケア","地域包括ケア病棟"],"kubun":"A308-3","field":"NY","group":"特定入院料","priority":"A","order":13,"summary":"急性期後の患者や在宅患者の緊急入院を受け入れ、在宅復帰を支援する病棟の入院料（60日まで）","target":"急性期の治療を終えた患者や、自宅・介護施設から緊急入院する患者","requirements":["看護職員13対1（7割以上が看護師）、常勤のPT・OT・STが1名以上、入退院支援部門の設置","入院料1：在宅等への退院7割2分5厘以上、自宅等からの入院2割以上、自宅等からの緊急入院が3か月で9人以上、200床未満","入院した日から60日が上限。40日以内と41日以上で点数が変わる"],"points":[{"label":"地域包括ケア病棟入院料1（40日以内）","value":2955,"unit":"点","per":"1日につき"},{"label":"地域包括ケア病棟入院料1（41日以上）","value":2807,"unit":"点","per":"1日につき"},{"label":"地域包括ケア病棟入院料4（40日以内）","value":2187,"unit":"点","per":"1日につき"}],"similar":[{"id":"NY-011","diff":"地域包括医療病棟は10対1で高齢者救急の治療が中心。地域包括ケアは13対1で、急性期後の受入れと在宅支援が中心"},{"id":"NY-012","diff":"回リハは専従のリハ職を多く置き、実績指数で評価される。地域包括ケアは在宅復帰率や在宅医療の実績で評価される"}],"hook":"地ケア＝60日まで・在宅復帰7割2分5厘・自宅等からの緊急入院","revNote":"令和8年度に、在宅患者支援病床初期加算の対象が救急搬送から緊急入院の患者に広がり、退院時共同指導料2などが包括の外（出来高）になった","r8new":false,"sources":[{"src":"S01","loc":"A308-3","checked":"2026-11-10"},{"src":"S02","loc":"第九の十一の二(1)(2)","checked":"2026-11-10"},{"src":"S05","loc":"p.6","checked":"2026-11-10"}],"updated":"2026-11-10"}]};
+const META = DATA.meta, ITEMS = DATA.items, SRC = DATA.sources;
+const BY_ID = Object.fromEntries(ITEMS.map(x => [x.id, x]));
+const FIELDS = META.fields;
+const KEY = "shinryo100-v1";
+const INTERVAL = [0, 1, 3, 7, 16, 35];   // 段階（box）ごとの次回までの日数
+const MASTER_BOX = 4;                    // この段階以上を「定着」とみなす
+const GRADE_LABEL = {1: "言えなかった", 2: "あいまい", 3: "言えた"};
+
+// ---------- 保存 ----------
+function fresh() {
+  return {v: 1, settings: {newPerDay: 4, pointCards: false}, cards: {}, intro: {}, log: [], daily: {}, tests: []};
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return fresh();
+    const s = JSON.parse(raw);
+    return Object.assign(fresh(), s, {settings: Object.assign(fresh().settings, s.settings || {})});
+  } catch (e) { return fresh(); }
+}
+let S = load();
+let saveWarned = false;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { if (!saveWarned) { saveWarned = true; alert("学習記録を保存できませんでした。プライベートブラウズを使っていないか確認してください。"); } }
+}
+
+// ---------- 日付 ----------
+function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function today() { return ymd(new Date()); }
+function addDays(s, n) { const [y, m, d] = s.split("-").map(Number); return ymd(new Date(y, m - 1, d + n)); }
+function md(s) { const [, m, d] = s.split("-"); return Number(m) + "/" + Number(d); }
+
+// ---------- 小道具 ----------
+const $ = sel => document.querySelector(sel);
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c])); }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
+function itemOf(cid) { return BY_ID[cid.split(":")[0]]; }
+function typeOf(cid) { return cid.split(":")[1]; }
+function fmtPoint(p) {
+  if (typeof p.value === "number") return p.value.toLocaleString() + (p.unit || "点");
+  if (typeof p.min === "number") return p.min.toLocaleString() + "〜" + p.max.toLocaleString() + (p.unit || "点");
+  return p.text || "";
+}
+function scaleNote(it) {
+  const p = (it.points || []).find(p => typeof p.value === "number" && p.per === "1日につき");
+  if (!p) return "";
+  const yen = p.value * 10, year = yen * 50 * 0.9 * 365;
+  return "1床1日 " + yen.toLocaleString() + "円。50床の病棟・稼働率90%なら年 約" + (year / 1e8).toFixed(1) + "億円（" + esc(p.label) + "のみの概算）";
+}
+
+// ---------- 項目の学習状況 ----------
+function itemLevel(it) {
+  const n = S.cards[it.id + ":N"], s = S.cards[it.id + ":S"];
+  if (!n) return 0;                                   // 未学習
+  if (n.box >= MASTER_BOX && s && s.box >= MASTER_BOX) return 2;   // 定着
+  return 1;                                           // 学習中
+}
+const LEVEL_LABEL = ["未学習", "学習中", "定着"];
+
+// 期限が来たカード。同じ項目のカードが複数あるときは、前回から一番間が空いたものだけを出す
+// （名称→概要と概要→名称を同じ日に出すと、片方がもう片方の答えになってしまうため）。
+function dueCards(day) {
+  const best = {};
+  for (const [cid, st] of Object.entries(S.cards)) {
+    const it = itemOf(cid);
+    if (!it) continue;                                // 廃止・未公開の項目
+    if (typeOf(cid) === "P" && !S.settings.pointCards) continue;
+    if (st.due > day) continue;
+    const cur = best[it.id];
+    const older = !cur || (st.last || "") < (S.cards[cur].last || "") || ((st.last || "") === (S.cards[cur].last || "") && typeOf(cid) === "S");
+    if (older) best[it.id] = cid;
+  }
+  return Object.values(best);
+}
+function introducedOn(day) { return Object.values(S.intro).filter(d => d === day).length; }
+function nextNewItems(day) {
+  const room = Math.max(0, S.settings.newPerDay - introducedOn(day));
+  return ITEMS.filter(it => !S.cards[it.id + ":N"]).slice(0, room);
+}
+function nextPointCards() {
+  if (!S.settings.pointCards) return [];
+  return ITEMS.filter(it => S.cards[it.id + ":N"] && S.cards[it.id + ":N"].box >= 2 && !S.cards[it.id + ":P"])
+    .slice(0, 4).map(it => it.id + ":P");
+}
+
+// 復習カードをばらばらに並べ、新規カードを等間隔に差し込む。同じ項目のカードが続かないようにする。
+function buildQueue() {
+  const day = today();
+  const rev = shuffle(dueCards(day));
+  const fresh = nextNewItems(day).map(it => it.id + ":N").concat(nextPointCards());
+  const q = rev.slice();
+  if (fresh.length) {
+    const step = Math.max(1, Math.floor((q.length + fresh.length) / fresh.length));
+    fresh.forEach((cid, i) => q.splice(Math.min(q.length, i * step + Math.floor(step / 2)), 0, cid));
+  }
+  for (let i = 1; i < q.length; i++) {
+    if (itemOf(q[i]).id === itemOf(q[i - 1]).id) {
+      const j = q.findIndex((c, k) => k > i && itemOf(c).id !== itemOf(q[i - 1]).id);
+      if (j > 0) [q[i], q[j]] = [q[j], q[i]];
+    }
+  }
+  return q;
+}
+
+// ---------- セッション ----------
+let SES = null;
+function startStudy() {
+  const q = buildQueue();
+  if (!q.length) return render();
+  SES = {mode: "study", queue: q, idx: 0, shown: false, t0: Date.now(), cardT0: Date.now(), res: [], again: {}, done: {}};
+  render();
+}
+function startTest(opt) {
+  let pool = ITEMS.filter(it => opt.field === "ALL" || it.field === opt.field);
+  if (opt.learnedOnly) { const l = pool.filter(it => itemLevel(it) > 0); if (l.length) pool = l; }
+  if (!pool.length) return;
+  if (opt.order === "weak") {
+    const score = it => { const n = S.cards[it.id + ":N"] || {}, s = S.cards[it.id + ":S"] || {}; return (n.lapses || 0) + (s.lapses || 0) + (testMiss[it.id] || 0) * 2 - (n.box || 0) * 0.1 + Math.random() * 0.5; };
+    pool = pool.slice().sort((a, b) => score(b) - score(a));
+  } else pool = shuffle(pool.slice());
+  pool = pool.slice(0, opt.count);
+  const q = pool.map(it => it.id + ":" + (opt.kind === "MIX" ? (Math.random() < .5 ? "N" : "S") : opt.kind));
+  SES = {mode: "test", queue: q, idx: 0, shown: false, t0: Date.now(), cardT0: Date.now(), res: [], again: {}, done: {}, opt};
+  render();
+}
+let testMiss = {};
+function rebuildTestMiss() { testMiss = {}; for (const t of S.tests) for (const id of (t.miss || [])) testMiss[id] = (testMiss[id] || 0) + 1; }
+
+function grade(g) {
+  if (!SES || !SES.shown) return;
+  const cid = SES.queue[SES.idx];
+  const sec = Math.min(300, Math.round((Date.now() - SES.cardT0) / 1000));
+  const day = today();
+  SES.res.push({cid, g});
+  if (SES.mode === "study") {
+    const first = !SES.done[cid];
+    if (first) {
+      SES.done[cid] = true;
+      const st = S.cards[cid];
+      const isNew = !st;
+      const c = st || {box: 0, reps: 0, lapses: 0};
+      if (g === 3) c.box = Math.min(c.box + 1, 5);
+      else if (g === 2) c.box = Math.max(c.box, 1);
+      else { if (c.box >= 2) c.lapses++; c.box = 1; }
+      c.reps++; c.last = day; c.due = addDays(day, INTERVAL[c.box]);
+      S.cards[cid] = c;
+      if (isNew && typeOf(cid) === "N") {
+        const it = itemOf(cid);
+        S.intro[it.id] = day;
+        if (!S.cards[it.id + ":S"]) S.cards[it.id + ":S"] = {box: 0, reps: 0, lapses: 0, due: addDays(day, 1)};   // 逆向きのカードは翌日から
+      }
+      const dd = S.daily[day] || (S.daily[day] = {n: 0, ok: 0, new: 0, rev: 0, sec: 0});
+      dd.n++; if (g === 3) dd.ok++; if (isNew) dd.new++; else dd.rev++; dd.sec += sec;
+    }
+    S.log.push([new Date().toISOString().slice(0, 19), cid, g, sec]);
+    if (S.log.length > 20000) S.log.splice(0, S.log.length - 20000);
+    if (g === 1 && (SES.again[cid] || 0) < 2) { SES.again[cid] = (SES.again[cid] || 0) + 1; SES.queue.push(cid); }
+    save();
+  }
+  SES.idx++; SES.shown = false; SES.cardT0 = Date.now();
+  if (SES.idx >= SES.queue.length) finish(); else render();
+  window.scrollTo(0, 0);
+}
+function finish() {
+  if (SES.mode === "test") {
+    const first = {};
+    for (const r of SES.res) if (!(r.cid in first)) first[r.cid] = r.g;
+    const ok = Object.values(first).filter(g => g === 3).length;
+    const miss = Object.entries(first).filter(([, g]) => g !== 3).map(([c]) => itemOf(c).id);
+    S.tests.push({d: today(), n: Object.keys(first).length, ok, field: SES.opt.field, miss});
+    if (S.tests.length > 200) S.tests.splice(0, S.tests.length - 200);
+    rebuildTestMiss(); save();
+  }
+  SES.finished = true; render();
+}
+function quit() { if (SES && SES.mode === "study" && SES.res.length) { SES.finished = true; render(); } else { SES = null; render(); } }
+
+// ---------- 画面 ----------
+let VIEW = "home", VIEWARG = null;
+function go(v, arg) { VIEW = v; VIEWARG = arg == null ? null : arg; SES = v === "home" ? null : SES; render(); window.scrollTo(0, 0); }
+
+function render() {
+  $("#ver").innerHTML = esc(META.fyLabel) + "版 ・ 更新 " + esc(META.dataVersion) + "<br>出題中 " + META.activeItems + " / " + META.totalItems + " 項目";
+  const app = $("#app");
+  if (SES && SES.finished) app.innerHTML = viewDone();
+  else if (SES) app.innerHTML = viewCard();
+  else app.innerHTML = ({home: viewHome, progress: viewProgress, list: viewList, detail: viewDetail, compare: viewCompare, test: viewTestSetup, settings: viewSettings}[VIEW] || viewHome)();
+  if (VIEW === "list" && !SES) { const q = $("#q"); if (q) { q.value = LISTQ; } }
+}
+
+function streak() {
+  let d = today(), n = 0;
+  if (!(S.daily[d] && S.daily[d].n)) d = addDays(d, -1);
+  while (S.daily[d] && S.daily[d].n) { n++; d = addDays(d, -1); }
+  return n;
+}
+
+function viewHome() {
+  const day = today();
+  const rev = dueCards(day).length;
+  const nw = nextNewItems(day).length;
+  const pc = nextPointCards().length;
+  const td = S.daily[day];
+  const lv = ITEMS.map(itemLevel);
+  const learned = lv.filter(x => x > 0).length, mastered = lv.filter(x => x === 2).length;
+  const tomorrow = dueCards(addDays(day, 1)).length;
+  let h = '<div class="box"><h2>今日の学習</h2>';
+  h += '<div class="grid3"><div class="stat"><b>' + rev + '</b><span>復習カード</span></div><div class="stat"><b>' + nw + '</b><span>新しい項目</span></div><div class="stat"><b>' + streak() + '</b><span>連続日数</span></div></div>';
+  if (pc) h += '<p class="muted">点数カード ' + pc + '枚も含みます。</p>';
+  if (rev + nw + pc > 0) h += '<p style="margin:14px 0 0"><button class="btn-main btn-big" data-act="start">学習を始める</button></p>';
+  else if (learned === ITEMS.length && ITEMS.length) h += '<p class="notice">今日の分は終わりました。出題中の' + ITEMS.length + '項目はすべて学習を始めています。明日の復習は ' + tomorrow + ' 枚です。</p>';
+  else h += '<p class="notice">今日の分は終わりました。明日の復習は ' + tomorrow + ' 枚です。</p>';
+  if (td && td.n) h += '<p class="muted">今日は ' + td.n + ' 枚に答えました（言えた ' + pct(td.ok, td.n) + '%、' + Math.max(1, Math.round(td.sec / 60)) + '分）。</p>';
+  h += '</div>';
+  h += '<div class="box"><h2>進み具合</h2><div class="grid3"><div class="stat"><b>' + learned + '</b><span>学習済み</span></div><div class="stat"><b>' + mastered + '</b><span>定着</span></div><div class="stat"><b>' + (ITEMS.length - learned) + '</b><span>未学習</span></div></div>';
+  for (const [k, f] of Object.entries(FIELDS)) {
+    const its = ITEMS.filter(it => it.field === k);
+    if (!its.length) continue;
+    const l = its.filter(it => itemLevel(it) > 0).length, m = its.filter(it => itemLevel(it) === 2).length;
+    h += '<div class="fieldrow"><span>' + esc(f.label) + '</span><span class="muted" style="text-align:right">' + l + '/' + its.length + '</span><div class="bar"><i style="width:' + pct(l, its.length) + '%"></i></div></div>';
+  }
+  h += '</div>';
+  h += '<div class="nav"><button data-act="go" data-v="test">理解度テスト</button><button data-act="go" data-v="compare">比較モード</button><button data-act="go" data-v="list">項目一覧</button><button data-act="go" data-v="progress">進捗の詳細</button></div>';
+  h += '<p style="text-align:center"><button class="btn-link" data-act="go" data-v="settings">設定・バックアップ</button></p>';
+  return h;
+}
+
+function detailHTML(it, opt) {
+  opt = opt || {};
+  let h = '<dl class="detail">';
+  if (opt.withSummary) h += '<dt>一言でいうと</dt><dd>' + esc(it.summary) + '</dd>';
+  h += '<dt>対象</dt><dd>' + esc(it.target) + '</dd>';
+  h += '<dt>主な要件</dt><dd><ul>' + it.requirements.map(r => '<li>' + esc(r) + '</li>').join("") + '</ul></dd>';
+  h += '<dt>点数</dt><dd>' + it.points.map(p => '<div class="pt"><span>' + esc(p.label) + (p.note ? '<br><span class="muted">' + esc(p.note) + '</span>' : '') + '</span><b>' + esc(fmtPoint(p)) + (p.per ? '<span class="muted">／' + esc(p.per) + '</span>' : '') + '</b></div>').join("");
+  const sc = scaleNote(it); if (sc) h += '<div class="muted" style="margin-top:4px">規模の目安：' + sc + '</div>';
+  h += '</dd>';
+  if (it.similar && it.similar.length) h += '<dt>似た項目との違い</dt><dd><ul>' + it.similar.map(s => '<li><b>' + esc(BY_ID[s.id] ? BY_ID[s.id].name : s.id) + '</b>：' + esc(s.diff) + '</li>').join("") + '</ul></dd>';
+  if (it.hook) h += '<dt>覚え方</dt><dd>' + esc(it.hook) + '</dd>';
+  if (it.revNote) h += '<dt>令和8年度改定</dt><dd>' + esc(it.revNote) + '</dd>';
+  h += '<dt>出典</dt><dd class="src">' + it.sources.map(s => { const r = SRC[s.src] || {}; return '<div><a href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.short || s.src) + '</a> ' + esc(s.loc || "") + '（' + esc(s.checked) + ' 確認）</div>'; }).join("") + '</dd>';
+  h += '</dl>';
+  return h;
+}
+
+function viewCard() {
+  const cid = SES.queue[SES.idx], it = itemOf(cid), t = typeOf(cid);
+  const st = S.cards[cid];
+  const total = SES.queue.length;
+  let h = '<div class="progress"><button class="btn-link" data-act="quit">やめる</button><div class="bar"><i style="width:' + pct(SES.idx, total) + '%"></i></div><span>' + (SES.idx + 1) + ' / ' + total + '</span></div>';
+  h += '<div class="card">';
+  h += '<div><span class="chip">' + esc(FIELDS[it.field].label) + '</span><span class="chip">' + esc(it.kubun) + '</span>' + (SES.mode === "study" && !st ? '<span class="chip new">新しい項目</span>' : '') + (it.r8new ? '<span class="chip">R8新設・再編</span>' : '') + (SES.mode === "test" ? '<span class="chip">テスト</span>' : '') + '</div>';
+  if (t === "N") h += '<div class="ask">何に対する診療報酬？　一言で言えますか</div><div class="front">' + esc(it.name) + '</div>';
+  else if (t === "S") h += '<div class="ask">この診療報酬の名称は？</div><div class="front long">' + esc(it.summary) + '</div>';
+  else h += '<div class="ask">おおよその点数は？</div><div class="front">' + esc(it.name) + '</div>';
+  if (SES.shown) {
+    h += '<div class="answer">';
+    if (t === "N") h += '<div class="main">' + esc(it.summary) + '</div>';
+    else if (t === "S") h += '<div class="main">' + esc(it.name) + '</div>' + (it.aliases && it.aliases.length ? '<div class="muted">通称：' + esc(it.aliases.join("、")) + '</div>' : '');
+    else h += '<div class="main">' + it.points.map(p => esc(p.label) + '：' + esc(fmtPoint(p))).join("<br>") + '</div>';
+    h += detailHTML(it, {withSummary: t !== "N"});
+    h += '</div>';
+  }
+  h += '</div>';
+  if (!SES.shown) h += '<div class="reveal"><button class="btn-main btn-big" data-act="show">答えを見る<span class="kbd" style="color:inherit;opacity:.8">スペースキー</span></button></div>';
+  else h += '<div class="grades"><button class="g1" data-act="grade" data-g="1">言えなかった<span class="kbd">1</span></button><button class="g2" data-act="grade" data-g="2">あいまい<span class="kbd">2</span></button><button class="g3" data-act="grade" data-g="3">言えた<span class="kbd">3</span></button></div>';
+  return h;
+}
+
+function viewDone() {
+  const first = {};
+  for (const r of SES.res) if (!(r.cid in first)) first[r.cid] = r.g;
+  const n = Object.keys(first).length, ok = Object.values(first).filter(g => g === 3).length;
+  const min = Math.max(1, Math.round((Date.now() - SES.t0) / 60000));
+  const miss = [...new Set(Object.entries(first).filter(([, g]) => g === 1).map(([c]) => itemOf(c).id))];
+  let h = '<div class="box"><h2>' + (SES.mode === "test" ? "テストの結果" : (SES.idx >= SES.queue.length ? "今日の学習が終わりました" : "ここまでの記録を保存しました")) + '</h2>';
+  h += '<div class="grid3"><div class="stat"><b>' + n + '</b><span>枚</span></div><div class="stat"><b>' + pct(ok, n) + '%</b><span>言えた</span></div><div class="stat"><b>' + min + '</b><span>分</span></div></div>';
+  if (SES.mode === "study") h += '<p class="muted">明日の復習は ' + dueCards(addDays(today(), 1)).length + ' 枚の予定です。</p>';
+  if (miss.length) h += '<h2 style="margin-top:14px">言えなかった項目</h2>' + miss.map(id => '<div class="item" data-act="detail" data-id="' + id + '"><span>' + esc(BY_ID[id].name) + '</span><span class="badge">詳しく</span></div>').join("");
+  h += '<p style="margin-top:14px"><button class="btn-main btn-big" data-act="home">ホームに戻る</button></p></div>';
+  return h;
+}
+
+function viewProgress() {
+  const day = today();
+  const lv = ITEMS.map(itemLevel);
+  const learned = lv.filter(x => x > 0).length, mastered = lv.filter(x => x === 2).length;
+  const since = addDays(day, -29);
+  const recent = S.log.filter(l => l[0].slice(0, 10) >= since);
+  const ok30 = recent.filter(l => l[2] === 3).length;
+  let h = '<div class="row"><button class="btn-link" data-act="home">← ホーム</button></div>';
+  h += '<div class="box"><h2>全体</h2><div class="grid2"><div class="stat"><b>' + learned + ' / ' + ITEMS.length + '</b><span>学習済みの項目</span></div><div class="stat"><b>' + mastered + '</b><span>定着した項目（両方向とも' + INTERVAL[MASTER_BOX] + '日間隔以上）</span></div><div class="stat"><b>' + dueCards(day).length + '</b><span>今日の復習カード</span></div><div class="stat"><b>' + pct(ok30, recent.length) + '%</b><span>直近30日の「言えた」率（' + recent.length + '回）</span></div></div></div>';
+  h += '<div class="box"><h2>分野別の習熟度</h2><table><tr><th>分野</th><th class="n">出題中</th><th class="n">学習済み</th><th class="n">定着</th><th class="n">言えた率</th></tr>';
+  for (const [k, f] of Object.entries(FIELDS)) {
+    const its = ITEMS.filter(it => it.field === k);
+    const l = its.filter(it => itemLevel(it) > 0).length, m = its.filter(it => itemLevel(it) === 2).length;
+    const lg = recent.filter(x => x[1].startsWith(k + "-"));
+    h += '<tr><td>' + esc(f.label) + '</td><td class="n">' + its.length + '</td><td class="n">' + l + '</td><td class="n">' + m + '</td><td class="n">' + (lg.length ? pct(lg.filter(x => x[2] === 3).length, lg.length) + '%' : '—') + '</td></tr>';
+  }
+  h += '</table><p class="muted">出題中の項目は順次増やします（全' + META.totalItems + '項目）。</p></div>';
+  const weak = ITEMS.map(it => {
+    const n = S.cards[it.id + ":N"] || {}, s = S.cards[it.id + ":S"] || {};
+    const lastBad = S.log.filter(l => l[1].startsWith(it.id + ":")).slice(-3).filter(l => l[2] === 1).length;
+    return {it, score: (n.lapses || 0) + (s.lapses || 0) + lastBad + (testMiss[it.id] || 0)};
+  }).filter(x => x.score > 0).sort((a, b) => b.score - a.score).slice(0, 10);
+  h += '<div class="box"><h2>復習が必要な項目</h2>' + (weak.length ? weak.map(x => '<div class="item" data-act="detail" data-id="' + x.it.id + '"><span>' + esc(x.it.name) + '</span><span class="badge">' + LEVEL_LABEL[itemLevel(x.it)] + '</span></div>').join("") : '<p class="muted">まだありません。「言えなかった」を選んだ項目やテストで間違えた項目がここに出ます。</p>') + '</div>';
+  h += '<div class="box"><h2>直近14日の記録</h2><table><tr><th>日付</th><th class="n">新規</th><th class="n">復習</th><th class="n">言えた率</th><th class="n">分</th></tr>';
+  let any = false;
+  for (let i = 0; i < 14; i++) {
+    const d = addDays(day, -i), x = S.daily[d];
+    if (!x) continue; any = true;
+    h += '<tr><td>' + md(d) + '</td><td class="n">' + x.new + '</td><td class="n">' + x.rev + '</td><td class="n">' + pct(x.ok, x.n) + '%</td><td class="n">' + Math.max(1, Math.round(x.sec / 60)) + '</td></tr>';
+  }
+  if (!any) h += '<tr><td colspan="5" class="muted">まだ記録がありません</td></tr>';
+  h += '</table></div>';
+  if (S.tests.length) h += '<div class="box"><h2>理解度テストの記録</h2><table><tr><th>日付</th><th>範囲</th><th class="n">正答</th></tr>' + S.tests.slice(-8).reverse().map(t => '<tr><td>' + md(t.d) + '</td><td>' + esc(t.field === "ALL" ? "全分野" : FIELDS[t.field].label) + '</td><td class="n">' + t.ok + ' / ' + t.n + '</td></tr>').join("") + '</table></div>';
+  return h;
+}
+
+let LISTQ = "";
+function viewList() {
+  const q = LISTQ.trim();
+  const its = ITEMS.filter(it => !q || (it.name + it.kubun + (it.aliases || []).join("") + it.summary).toLowerCase().includes(q.toLowerCase()));
+  let h = '<div class="row"><button class="btn-link" data-act="home">← ホーム</button></div>';
+  h += '<div class="box"><input type="search" id="q" placeholder="名称・区分番号・通称で探す" autocomplete="off">';
+  for (const [k, f] of Object.entries(FIELDS)) {
+    const fi = its.filter(it => it.field === k);
+    if (!fi.length) continue;
+    h += '<h2 style="margin-top:16px">' + esc(f.label) + '</h2>';
+    h += fi.map(it => { const l = itemLevel(it); return '<div class="item" data-act="detail" data-id="' + it.id + '"><span>' + esc(it.name) + ' <span class="muted">' + esc(it.kubun) + '</span></span><span class="badge ' + ["", "l", "m"][l] + '">' + LEVEL_LABEL[l] + '</span></div>'; }).join("");
+  }
+  if (!its.length) h += '<p class="muted">見つかりませんでした。</p>';
+  h += '<p class="muted" style="margin-top:12px">ほかの ' + (META.totalItems - META.activeItems) + ' 項目は、一次情報で確認が済みしだい追加します。</p></div>';
+  return h;
+}
+
+function viewDetail() {
+  const it = BY_ID[VIEWARG];
+  if (!it) return viewHome();
+  let h = '<div class="row"><button class="btn-link" data-act="back">← 戻る</button></div>';
+  h += '<div class="card" style="min-height:auto"><div><span class="chip">' + esc(FIELDS[it.field].label) + '</span><span class="chip">' + esc(it.kubun) + '</span><span class="chip">' + LEVEL_LABEL[itemLevel(it)] + '</span></div><div class="front">' + esc(it.name) + '</div>' + (it.aliases && it.aliases.length ? '<div class="muted">通称：' + esc(it.aliases.join("、")) + '</div>' : '') + '<div class="answer"><div class="main">' + esc(it.summary) + '</div>' + detailHTML(it) + '</div></div>';
+  return h;
+}
+
+function pairs() {
+  const seen = new Set(), out = [];
+  for (const it of ITEMS) for (const s of it.similar || []) {
+    if (!BY_ID[s.id]) continue;
+    const k = [it.id, s.id].sort().join("+");
+    if (seen.has(k)) continue; seen.add(k); out.push(k.split("+"));
+  }
+  return out;
+}
+let CMP = null;
+function viewCompare() {
+  const ps = pairs();
+  let h = '<div class="row"><button class="btn-link" data-act="home">← ホーム</button></div>';
+  if (!ps.length) return h + '<div class="box"><p class="muted">比較できる組合せがまだありません。</p></div>';
+  if (!CMP) CMP = {i: Math.floor(Math.random() * ps.length), shown: false};
+  const [a, b] = ps[CMP.i % ps.length].map(id => BY_ID[id]);
+  const diff = (x, y) => (x.similar || []).find(s => s.id === y.id);
+  h += '<div class="card" style="min-height:auto"><div class="ask">2つの違いを説明できますか（' + (CMP.i % ps.length + 1) + ' / ' + ps.length + '組）</div>';
+  h += '<div class="pair"><div class="side"><b>' + esc(a.name) + '</b><div class="muted">' + esc(a.kubun) + '</div></div><div class="side"><b>' + esc(b.name) + '</b><div class="muted">' + esc(b.kubun) + '</div></div></div>';
+  if (CMP.shown) {
+    h += '<div class="answer"><div class="pair"><div class="side"><b>' + esc(a.name) + '</b><div>' + esc(a.summary) + '</div></div><div class="side"><b>' + esc(b.name) + '</b><div>' + esc(b.summary) + '</div></div></div><dl class="detail"><dt>違い</dt><dd><ul>';
+    const d1 = diff(a, b), d2 = diff(b, a);
+    if (d1) h += '<li>' + esc(d1.diff) + '</li>';
+    if (d2) h += '<li>' + esc(d2.diff) + '</li>';
+    h += '</ul></dd></dl></div>';
+  }
+  h += '</div>';
+  h += CMP.shown ? '<div class="grid2"><button data-act="cmpdetail" data-id="' + a.id + '">' + esc(a.name) + 'を詳しく</button><button data-act="cmpdetail" data-id="' + b.id + '">' + esc(b.name) + 'を詳しく</button></div><p><button class="btn-main btn-big" data-act="cmpnext">次の組合せ</button></p>' : '<div class="reveal"><button class="btn-main btn-big" data-act="cmpshow">違いを見る</button></div>';
+  return h;
+}
+
+function viewTestSetup() {
+  let h = '<div class="row"><button class="btn-link" data-act="home">← ホーム</button></div>';
+  h += '<div class="box"><h2>理解度テスト</h2><p class="muted">復習の予定（間隔反復）には影響しません。間違えた項目は「復習が必要な項目」に出ます。</p>';
+  h += '<label class="muted">範囲</label><select id="t-field"><option value="ALL">全分野をまぜる</option>' + Object.entries(FIELDS).filter(([k]) => ITEMS.some(it => it.field === k)).map(([k, f]) => '<option value="' + k + '">' + esc(f.label) + '</option>').join("") + '</select>';
+  h += '<label class="muted" style="display:block;margin-top:10px">出し方</label><select id="t-order"><option value="random">ランダム</option><option value="weak">苦手な項目を優先</option></select>';
+  h += '<label class="muted" style="display:block;margin-top:10px">形式</label><select id="t-kind"><option value="MIX">名称→概要と概要→名称をまぜる</option><option value="N">名称→概要</option><option value="S">概要→名称</option></select>';
+  h += '<label class="muted" style="display:block;margin-top:10px">問題数</label><select id="t-count"><option>5</option><option selected>10</option><option>20</option><option value="999">すべて</option></select>';
+  h += '<label class="opt"><input type="checkbox" id="t-learned" checked> 学習を始めた項目だけから出す</label>';
+  h += '<p><button class="btn-main btn-big" data-act="teststart">テストを始める</button></p></div>';
+  return h;
+}
+
+function viewSettings() {
+  let h = '<div class="row"><button class="btn-link" data-act="home">← ホーム</button></div>';
+  h += '<div class="box"><h2>学習の設定</h2>';
+  h += '<label class="muted">1日に新しく覚える項目の数</label><select id="s-new">' + [1, 2, 3, 4, 5, 6, 8].map(n => '<option' + (n === S.settings.newPerDay ? ' selected' : '') + '>' + n + '</option>').join("") + '</select>';
+  h += '<label class="opt"><input type="checkbox" id="s-pt"' + (S.settings.pointCards ? ' checked' : '') + '> 点数カードも出す（名称と概要がある程度定着した項目から順に）</label>';
+  h += '<p><button data-act="savesettings">設定を保存</button></p></div>';
+  h += '<div class="box"><h2>バックアップ・引き継ぎ</h2><p class="muted">学習記録はこの端末のこのブラウザの中だけに保存されています。PCとスマホで引き継ぐときや、念のための保存に使ってください。</p>';
+  h += '<div class="row"><button data-act="export">記録を書き出す</button><button data-act="import">記録を読み込む</button><input type="file" id="imp" accept="application/json,.json" style="display:none"></div></div>';
+  h += '<div class="box"><h2>リセット</h2><p class="muted">学習記録をすべて消します。元に戻せません。</p><button class="g1" data-act="reset">学習記録を消す</button></div>';
+  h += '<div class="box"><h2>このアプリについて</h2><p class="muted">名称→概要、概要→名称の両方向で思い出す練習をし、思い出せた度合いに応じて次に出す日を決めます（1日→3日→7日→16日→35日。言えなかったカードは翌日に戻ります）。</p></div>';
+  return h;
+}
+
+// ---------- 操作 ----------
+let PREV = "home";
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const a = el.dataset.act;
+  if (a === "home") { SES = null; CMP = null; go("home"); }
+  else if (a === "start") startStudy();
+  else if (a === "show") { if (SES) { SES.shown = true; render(); } }
+  else if (a === "grade") grade(Number(el.dataset.g));
+  else if (a === "quit") quit();
+  else if (a === "go") { PREV = "home"; CMP = null; go(el.dataset.v); }
+  else if (a === "detail") { PREV = SES ? "home" : VIEW; SES = null; go("detail", el.dataset.id); }
+  else if (a === "cmpdetail") { PREV = "compare"; go("detail", el.dataset.id); }
+  else if (a === "back") go(PREV || "home");
+  else if (a === "cmpshow") { CMP.shown = true; render(); }
+  else if (a === "cmpnext") { const n = pairs().length; CMP = {i: n > 1 ? (CMP.i + 1 + Math.floor(Math.random() * (n - 1))) % n : 0, shown: false}; render(); window.scrollTo(0, 0); }
+  else if (a === "teststart") startTest({field: $("#t-field").value, order: $("#t-order").value, kind: $("#t-kind").value, count: Number($("#t-count").value), learnedOnly: $("#t-learned").checked});
+  else if (a === "savesettings") { S.settings.newPerDay = Number($("#s-new").value); S.settings.pointCards = $("#s-pt").checked; save(); go("home"); }
+  else if (a === "export") {
+    const blob = new Blob([JSON.stringify(S)], {type: "application/json"});
+    const url = URL.createObjectURL(blob), link = document.createElement("a");
+    link.href = url; link.download = "shinryo100_記録_" + today() + ".json"; document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  else if (a === "import") $("#imp").click();
+  else if (a === "reset") { if (confirm("学習記録をすべて消します。元に戻せません。よろしいですか？")) { S = fresh(); save(); rebuildTestMiss(); go("home"); } }
+});
+document.addEventListener("change", e => {
+  if (e.target.id !== "imp" || !e.target.files.length) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const s = JSON.parse(r.result);
+      if (s.v !== 1 || typeof s.cards !== "object") throw new Error("形式が違います");
+      if (!confirm("いまの学習記録を、読み込んだ記録で置き換えます。よろしいですか？")) return;
+      S = Object.assign(fresh(), s); save(); rebuildTestMiss(); alert("読み込みました。"); go("home");
+    } catch (err) { alert("読み込めませんでした：" + err.message); }
+  };
+  r.readAsText(e.target.files[0]);
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "q") { LISTQ = e.target.value; const pos = e.target.selectionStart; render(); const q = $("#q"); q.focus(); q.setSelectionRange(pos, pos); }
+});
+document.addEventListener("keydown", e => {
+  if (!SES || SES.finished || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (!SES.shown && (e.key === " " || e.key === "Enter")) { e.preventDefault(); SES.shown = true; render(); }
+  else if (SES.shown && ["1", "2", "3"].includes(e.key)) { e.preventDefault(); grade(Number(e.key)); }
+});
+
+// ---------- 起動 ----------
+rebuildTestMiss();
+$("#foot").innerHTML = "出典：厚生労働省の告示・通知・改定の概要資料（各カードに資料名・参照箇所・確認日を表示）。" + esc(META.basis) + "に基づく。学習用の要約であり、算定や届出の判断には必ず原典を確認してください。";
+render();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
+</body>
+</html>
