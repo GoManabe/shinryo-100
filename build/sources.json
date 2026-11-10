@@ -169,5 +169,23 @@
     "url": "https://www.mhlw.go.jp/content/12400000/001744953.pdf",
     "issued": "2026-09-02",
     "kind": "疑義解釈"
+  },
+  {
+    "src": "S20",
+    "title": "令和8年度診療報酬改定の概要 8．質の高い在宅医療の推進",
+    "short": "改定の概要 8.在宅医療",
+    "issuer": "厚生労働省保険局医療課",
+    "url": "https://www.mhlw.go.jp/content/12400000/001686053.pdf",
+    "issued": "",
+    "kind": "概要資料"
+  },
+  {
+    "src": "S21",
+    "title": "疑義解釈資料の送付について（その8）（令和8年6月17日 事務連絡）",
+    "short": "疑義解釈（その8）",
+    "issuer": "厚生労働省保険局医療課",
+    "url": "https://www.mhlw.go.jp/content/12400000/001712853.pdf",
+    "issued": "2026-06-17",
+    "kind": "疑義解釈"
   }
 ]
