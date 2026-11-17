@@ -91,6 +91,17 @@ def main():
                 errors.append(f"{iid}: 出典ID {s.get('src')} が sources.json にない")
             if not DATE_RE.match(s.get("checked", "")):
                 errors.append(f"{iid}: 出典 {s.get('src')} の確認日がない")
+        facts = it.get("facts") or []
+        if len(facts) < 2:
+            errors.append(f"{iid}: 要点（facts）が2問未満")
+        for fc in facts:
+            xs = fc.get("x") or []
+            if not fc.get("q") or not fc.get("a"):
+                errors.append(f"{iid}: 要点の問い・正解が空")
+            if len(xs) != 3 or len(set(xs)) != 3:
+                errors.append(f"{iid}: 要点「{fc.get('q')}」の誤りの選択肢が3つそろっていない")
+            if fc.get("a") in xs:
+                errors.append(f"{iid}: 要点「{fc.get('q')}」の正解が誤りの選択肢にも入っている")
         for sim in it.get("similar") or []:
             t = by_id.get(sim.get("id"))
             if not t:
@@ -113,7 +124,7 @@ def main():
     used = sorted({s["src"] for x in active for s in x["sources"]})
 
     keep = ("id", "name", "aliases", "kubun", "field", "group", "priority", "order", "summary", "target",
-            "requirements", "points", "similar", "hook", "revNote", "r8new", "sources", "updated")
+            "requirements", "points", "similar", "hook", "revNote", "r8new", "facts", "sources", "updated")
     data = {
         "meta": dict(meta, totalItems=len(items), activeItems=len(active)),
         "sources": {k: sources[k] for k in used},
