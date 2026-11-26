@@ -349,29 +349,36 @@ function viewHome() {
   const nw = nextNewItems(day).length;
   const pc = nextPointCards().length;
   const td = S.daily[day];
-  const lv = ITEMS.map(itemLevel);
-  const learned = lv.filter(x => x > 0).length, mastered = lv.filter(x => x === 2).length;
+  const learned = ITEMS.filter(it => itemLevel(it) > 0).length;
   const tomorrow = dueCards(addDays(day, 1)).length;
-  let h = '<div class="box"><h2>今日の一問一答</h2>';
-  h += '<div class="grid3"><div class="stat"><b>' + rev + '</b><span>復習カード</span></div><div class="stat"><b>' + nw + '</b><span>新しい項目</span></div><div class="stat"><b>' + streak() + '</b><span>連続日数</span></div></div>';
-  if (pc) h += '<p class="muted">点数カード ' + pc + '枚も含みます。</p>';
-  if (rev + nw + pc > 0) h += '<p style="margin:14px 0 0"><button class="btn-main btn-big" data-act="start">学習を始める</button></p>';
-  else if (learned === ITEMS.length && ITEMS.length) h += '<p class="notice">今日の分は終わりました。出題中の' + ITEMS.length + '項目はすべて学習を始めています。明日の復習は ' + tomorrow + ' 枚です。</p>';
-  else h += '<p class="notice">今日の分は終わりました。明日の復習は ' + tomorrow + ' 枚です。</p>';
-  if (td && td.n) h += '<p class="muted">今日は ' + td.n + ' 枚に答えました（言えた ' + pct(td.ok, td.n) + '%、' + Math.max(1, Math.round(td.sec / 60)) + '分）。</p>';
-  h += '</div>';
-  h += '<div class="box"><h2>進み具合</h2><div class="grid3"><div class="stat"><b>' + learned + '</b><span>学習済み</span></div><div class="stat"><b>' + mastered + '</b><span>定着</span></div><div class="stat"><b>' + (ITEMS.length - learned) + '</b><span>未学習</span></div></div>';
-  for (const [k, f] of Object.entries(FIELDS)) {
-    const its = ITEMS.filter(it => it.field === k);
-    if (!its.length) continue;
-    const l = its.filter(it => itemLevel(it) > 0).length, m = its.filter(it => itemLevel(it) === 2).length;
-    h += '<div class="fieldrow"><span>' + esc(f.label) + '</span><span class="muted" style="text-align:right">' + l + '/' + its.length + '</span><div class="bar"><i style="width:' + pct(l, its.length) + '%"></i></div></div>';
+  const qs = ITEMS.reduce((a, it) => { const s = qStat(it.id); a.n += s.n; a.ok += s.ok; return a; }, {n: 0, ok: 0});
+  const weakN = ITEMS.filter(it => missOf(it.id) > 0).length;
+  // ドリル（メイン）
+  let h = '<div class="box"><h2>ドリル</h2>';
+  h += '<div class="grid3"><div class="stat"><b>' + qs.n + '</b><span>解いた問題</span></div><div class="stat"><b>' + (qs.n ? pct(qs.ok, qs.n) + '%' : '—') + '</b><span>正答率</span></div><div class="stat"><b>' + weakN + '</b><span>間違えた項目</span></div></div>';
+  h += '<p style="margin:14px 0 0"><button class="btn-main btn-big" data-act="dquick" data-o="random">10問ドリルを始める<span class="kbd" style="color:inherit;opacity:.85">全分野・ランダム</span></button></p>';
+  h += '<div class="grid2" style="margin-top:8px"><button data-act="dquick" data-o="weak"' + (weakN ? '' : ' disabled') + '>苦手から10問</button><button data-act="go" data-v="drill">分野・形式を選ぶ</button></div>';
+  if (qs.n) {
+    h += '<div style="margin-top:12px">';
+    for (const [k, f] of Object.entries(FIELDS)) {
+      const st = ITEMS.filter(it => it.field === k).reduce((a, it) => { const s = qStat(it.id); a.n += s.n; a.ok += s.ok; return a; }, {n: 0, ok: 0});
+      h += '<div class="fieldrow"><span>' + esc(f.label) + '</span><span class="muted" style="text-align:right">' + (st.n ? pct(st.ok, st.n) + '%' : '—') + '</span><div class="bar"><i class="' + (st.n && pct(st.ok, st.n) >= 80 ? 'ok' : '') + '" style="width:' + (st.n ? pct(st.ok, st.n) : 0) + '%"></i></div></div>';
+    }
+    h += '<p class="muted" style="margin:4px 0 0">分野別の正答率（緑は80%以上）</p></div>';
   }
   h += '</div>';
+  // 模擬試験
   const lastEx = S.exams[S.exams.length - 1];
-  h += '<div class="box"><h2>ドリルと模擬試験</h2><p class="muted" style="margin-top:0">四択問題で覚えたかどうかを確かめます。ドリルで分野ごとに練習し、模擬試験（50問）で合格ライン80%をめざします。</p>';
-  if (lastEx) h += '<p class="muted">直近の模擬試験：' + md(lastEx.d) + ' ' + lastEx.score + ' / ' + lastEx.total + '問（' + (lastEx.pass ? '<span class="okc">合格ライン到達</span>' : '<span class="ngc">合格ラインまであと' + (EXAM_PASS - lastEx.score) + '問</span>') + '）</p>';
-  h += '<div class="grid2"><button class="btn-main" data-act="go" data-v="drill">ドリル</button><button class="btn-main" data-act="go" data-v="exam">模擬試験</button></div></div>';
+  h += '<div class="box"><h2>模擬試験</h2><p class="muted" style="margin-top:0">全分野から' + EXAM_TOTAL + '問・' + EXAM_MIN + '分。合格ラインは80%（' + EXAM_PASS + '問）です。</p>';
+  if (lastEx) h += '<p class="muted">直近の結果：' + md(lastEx.d) + ' ' + lastEx.score + ' / ' + lastEx.total + '問（' + (lastEx.pass ? '<span class="okc">合格ライン到達</span>' : '<span class="ngc">合格ラインまであと' + (EXAM_PASS - lastEx.score) + '問</span>') + '）</p>';
+  h += '<button class="btn-main" style="width:100%" data-act="go" data-v="exam">模擬試験を受ける</button></div>';
+  // 今日の一問一答（サブ）
+  h += '<div class="box"><h2>今日の一問一答</h2><p class="muted" style="margin-top:0">名称と概要を思い出す練習です。忘れかけたころに復習カードが出ます。</p>';
+  h += '<div class="row" style="justify-content:space-between"><span>復習 <b>' + rev + '</b>枚・新しい項目 <b>' + nw + '</b>' + (pc ? '・点数カード <b>' + pc + '</b>枚' : '') + '</span><span class="muted">学習済み ' + learned + ' / ' + ITEMS.length + '</span></div>';
+  if (rev + nw + pc > 0) h += '<p style="margin:10px 0 0"><button style="width:100%" data-act="start">一問一答を始める</button></p>';
+  else h += '<p class="notice">今日の分は終わりました。明日の復習は ' + tomorrow + ' 枚です。</p>';
+  if (td && td.n) h += '<p class="muted">今日は ' + td.n + ' 枚に答えました（言えた ' + pct(td.ok, td.n) + '%）。連続 ' + streak() + '日。</p>';
+  h += '</div>';
   h += '<div class="nav"><button data-act="go" data-v="list">項目一覧</button><button data-act="go" data-v="progress">成績</button></div>';
   h += '<p style="text-align:center"><button class="btn-link" data-act="go" data-v="settings">設定・バックアップ</button></p>';
   return h;
@@ -677,7 +684,7 @@ function viewDrill() {
     h += '<label class="muted">範囲</label><select id="d-field">' + fieldOptions(true) + '</select>';
     h += '<label class="muted" style="display:block;margin-top:10px">問題の形式</label><select id="d-kind"><option value="MIX">まぜる</option><option value="fact">要点（点数・基準・日数など）</option><option value="n2s">名称→説明</option><option value="s2n">説明→名称</option></select>';
     h += '<label class="muted" style="display:block;margin-top:10px">出し方</label><select id="d-order"><option value="random">ランダム</option><option value="weak">苦手を優先</option><option value="learned">一問一答で学習した項目から</option></select>';
-    h += '<label class="muted" style="display:block;margin-top:10px">問題数</label><select id="d-count"><option>10</option><option selected>20</option><option>30</option></select>';
+    h += '<label class="muted" style="display:block;margin-top:10px">問題数</label><select id="d-count"><option selected>10</option><option>20</option><option>30</option></select>';
     h += '<p style="margin-top:14px"><button class="btn-main btn-big" data-act="drillstart">ドリルを始める</button></p></div>';
     return h;
   }
@@ -777,6 +784,7 @@ function handleQuizAct(a, el) {
   else if (a === "dans") answerDrill(Number(el.dataset.i));
   else if (a === "dnext") nextDrill();
   else if (a === "dsetup") { DR = null; render(); }
+  else if (a === "dquick") { const o = {field: "ALL", kind: "MIX", order: el.dataset.o, n: 10}; startDrill(buildSet(ITEMS, 10, "MIX", o.order === "weak"), o); }
   else if (a === "dretry") { const w = DR.res.filter(r => !r.ok).map(r => makeQ(BY_ID[r.q.id], r.q.kind)); startDrill(shuffle(w), DR.opt); }
   else if (a === "dagain") { const o = DR.opt; if (!o) { DR = null; render(); return true; } let pool = ITEMS.filter(it => o.field === "ALL" || it.field === o.field); if (o.order === "learned") { const l = pool.filter(it => itemLevel(it) > 0); if (l.length) pool = l; } startDrill(buildSet(pool, o.n, o.kind, o.order === "weak"), o); }
   else if (a === "exstart") startExam();
