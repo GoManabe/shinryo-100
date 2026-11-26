@@ -1,5 +1,5 @@
 // オフライン対応。キャッシュを先に返しつつ裏で最新版を取得する（次回起動時に反映）
-const CACHE = 'shinryo-100-v3';
+const CACHE = 'shinryo-100-v4';
 const FILES = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 

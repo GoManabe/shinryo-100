@@ -130,6 +130,7 @@ details.more{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
 details.more summary{cursor:pointer;color:var(--main);font-size:14px}
 .big-score{font-size:42px;font-weight:700;line-height:1.2}
 .okc{color:var(--ok)}.ngc{color:var(--ng)}
+#swipehint{position:fixed;left:6px;top:50%;width:40px;height:40px;margin-top:-20px;border-radius:50%;background:var(--main);color:var(--main-ink);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .1s;z-index:10}
 </style>
 </head>
 <body>
@@ -139,6 +140,7 @@ details.more summary{cursor:pointer;color:var(--main);font-size:14px}
     <div class="ver" id="ver"></div>
   </header>
   <main id="app"></main>
+  <div id="swipehint" aria-hidden="true">‹</div>
   <footer id="foot"></footer>
 </div>
 <script>
@@ -334,6 +336,7 @@ function render() {
   else if (SES) app.innerHTML = viewCard();
   else app.innerHTML = ({home: viewHome, progress: viewProgress, list: viewList, detail: viewDetail, compare: viewCompare, drill: viewDrill, exam: viewExam, settings: viewSettings}[VIEW] || viewHome)();
   if (VIEW === "list" && !SES) { const q = $("#q"); if (q) { q.value = LISTQ; } }
+  syncHistory();
 }
 
 function streak() {
@@ -869,8 +872,63 @@ document.addEventListener("keydown", e => {
   else if (SES.shown && ["1", "2", "3"].includes(e.key)) { e.preventDefault(); grade(Number(e.key)); }
 });
 
+// ---------- 戻る操作（スマホの戻るジェスチャー・戻るボタン・右スワイプ） ----------
+// ホーム以外の画面にいる間は、ブラウザの履歴を1つ積んでおく。
+// 「戻る」が押されると popstate が起き、アプリの中で1つ前の画面に戻す（ホームで戻るとアプリを閉じる）。
+let IGNORE_POP = false;
+function isHome() { return !SES && VIEW === "home"; }
+function syncHistory() {
+  const deep = history.state && history.state.app === "deep";
+  if (!isHome() && !deep) history.pushState({app: "deep"}, "");
+  else if (isHome() && deep) { IGNORE_POP = true; history.back(); }
+}
+function appBack() {
+  if (SES) { if (SES.finished) { SES = null; go("home"); } else quit(); return; }
+  if (VIEW === "drill" && DR && !DR.done) {
+    if ((DR.i > 0 || DR.answered) && !confirm("ドリルをやめますか？（ここまでの解答は記録されています）")) { syncHistory(); return; }
+    DR = null; render(); window.scrollTo(0, 0); return;
+  }
+  if (VIEW === "exam" && EX && !EX.done) {
+    if (!confirm("模擬試験を中断しますか？（採点されず、記録も残りません）")) { syncHistory(); return; }
+    if (exTimer) clearInterval(exTimer);
+    EX = null; render(); window.scrollTo(0, 0); return;
+  }
+  if (VIEW === "drill" && DR && DR.done) DR = null;
+  if (VIEW === "exam" && EX && EX.done) EX = null;
+  if (VIEW === "detail") { go(PREV && PREV !== "detail" ? PREV : "home"); return; }
+  if (VIEW === "compare") { CMP = null; go("list"); return; }
+  go("home");
+}
+window.addEventListener("popstate", () => {
+  if (IGNORE_POP) { IGNORE_POP = false; return; }
+  appBack();
+});
+// 右スワイプ（左から右へ指を動かす）で戻る。縦方向の動きが大きいとき（スクロール）は反応しない
+let TS = null;
+const hint = () => $("#swipehint");
+document.addEventListener("touchstart", e => {
+  if (e.touches.length !== 1 || isHome()) { TS = null; return; }
+  const t = e.touches[0];
+  TS = {x: t.clientX, y: t.clientY, t: Date.now()};
+}, {passive: true});
+document.addEventListener("touchmove", e => {
+  if (!TS) return;
+  const t = e.touches[0], dx = t.clientX - TS.x, dy = t.clientY - TS.y;
+  if (Math.abs(dy) > Math.abs(dx)) { hint().style.opacity = 0; return; }
+  hint().style.opacity = dx > 20 ? Math.min(1, (dx - 20) / 60) : 0;
+}, {passive: true});
+document.addEventListener("touchend", e => {
+  hint().style.opacity = 0;
+  if (!TS) return;
+  const t = e.changedTouches[0], dx = t.clientX - TS.x, dy = t.clientY - TS.y, dt = Date.now() - TS.t;
+  TS = null;
+  if (dx > 80 && Math.abs(dy) < dx * 0.5 && dt < 800) history.back();
+}, {passive: true});
+document.addEventListener("touchcancel", () => { TS = null; hint().style.opacity = 0; }, {passive: true});
+
 // ---------- 起動 ----------
 rebuildTestMiss();
+history.replaceState({app: "root"}, "");
 $("#foot").innerHTML = "出典：厚生労働省の告示・通知・改定の概要資料（各カードに資料名・参照箇所・確認日を表示）。" + esc(META.basis) + "に基づく。学習用の要約であり、算定や届出の判断には必ず原典を確認してください。";
 render();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
